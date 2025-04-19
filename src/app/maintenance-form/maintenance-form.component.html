@@ -40,6 +40,7 @@
 <h3>Submitted Requests</h3>
 <ul>
   <li *ngFor="let request of requests">
+    // for every request in requests array, render this block of HTML
     <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
     {{ request.description }}
   </li>
