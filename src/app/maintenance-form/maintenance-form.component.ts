@@ -21,7 +21,18 @@ export class MaintenanceFormComponent {
   requests: any[] = []; // list of requests
 
   submitRequest() {
-    this.requests.push({ ...this.formData }); // add to the list of requests
+    //this.requests.push({ ...this.formData }); // add to the list of requests
+
+    if (this.isEditMode && this.editIndex !== null) {
+      // Update the existing request
+      this.requests[this.editIndex] = { ...this.formData };
+      this.isEditMode = false;
+      this.editIndex = null;
+    } else {
+      // Add a new request
+      this.requests.push({ ...this.formData });
+    }
+
     // Reset form data after submission
     this.formData = {
       tenantName: '',
@@ -35,5 +46,15 @@ export class MaintenanceFormComponent {
 
   deleteRequest(index: number) {
     this.requests.splice(index, 1); // removes the request at the given index
+  }
+
+  // Track if we're editing an existing request
+  isEditMode: boolean = false;
+  editIndex: number | null = null;
+
+  editRequest(index: number) {
+    this.formData = { ...this.requests[index] }; // Load into form
+    this.isEditMode = true;
+    this.editIndex = index;
   }
 }
