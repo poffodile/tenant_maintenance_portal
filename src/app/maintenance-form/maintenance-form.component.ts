@@ -32,4 +32,8 @@ export class MaintenanceFormComponent {
     //console.log('Maintenance Request Submitted:', this.formData);
     // TODO: add to a list of requests
   }
+
+  deleteRequest(index: number) {
+    this.requests.splice(index, 1); // removes the request at the given index
+  }
 }
