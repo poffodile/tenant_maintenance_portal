@@ -29,7 +29,7 @@ export class MaintenanceFormComponent {
       urgency: '',
     };
 
-    console.log('Maintenance Request Submitted:', this.formData);
+    //console.log('Maintenance Request Submitted:', this.formData);
     // TODO: add to a list of requests
   }
 }
