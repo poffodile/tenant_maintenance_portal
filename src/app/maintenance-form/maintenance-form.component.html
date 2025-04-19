@@ -35,3 +35,12 @@
 
   <button type="submit" [disabled]="!requestForm.form.valid">Submit</button>
 </form>
+
+<hr />
+<h3>Submitted Requests</h3>
+<ul>
+  <li *ngFor="let request of requests">
+    <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
+    {{ request.description }}
+  </li>
+</ul>
