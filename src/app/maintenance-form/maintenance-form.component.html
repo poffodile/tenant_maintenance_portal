@@ -1,6 +1,6 @@
 <h2>Submit a Maintenance Request</h2>
 
-<form (ngSubmit)="submitRequest()" #requestForm="ngForm">
+<form #form="ngForm" (ngSubmit)="submitRequest()" #requestForm="ngForm">
   <label>
     Tenant Name:
     <input
@@ -26,7 +26,7 @@
   <label>
     Urgency:
     <select name="urgency" [(ngModel)]="formData.urgency" required>
-      <option value="">--Select--</option>
+      <option value="" disabled selected>--Select--</option>
       <option value="Low">Low</option>
       <option value="Medium">Medium</option>
       <option value="High">High</option>
@@ -34,7 +34,10 @@
   </label>
   <br /><br />
 
-  <button type="submit" [disabled]="!requestForm.form.valid">Submit</button>
+  <button type="submit" [disabled]="!requestForm.form.valid">
+    {{ isEditMode ? "Update Request" : "Submit" }}
+    <!-- disables the submit button if the form is invalid -->
+  </button>
 </form>
 
 <hr />
