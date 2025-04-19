@@ -20,6 +20,7 @@
       required
     ></textarea>
   </label>
+
   <br /><br />
 
   <label>
@@ -39,9 +40,11 @@
 <hr />
 <h3>Submitted Requests</h3>
 <ul>
-  <li *ngFor="let request of requests">
+  <li *ngFor="let request of requests; let i = index">
     <!-- for every request in requests array, render this block of HTML -->
     <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
     {{ request.description }}
+    <!-- Where i is the index capturing the position of each request in the array -->
+    <button (click)="deleteRequest(i)">Delete</button>
   </li>
 </ul>
