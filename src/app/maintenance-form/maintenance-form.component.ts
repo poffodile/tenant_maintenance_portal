@@ -23,6 +23,16 @@ export class MaintenanceFormComponent {
   submitRequest() {
     //this.requests.push({ ...this.formData }); // add to the list of requests
 
+    //prevents empty space entres in the form
+    if (
+      !this.formData.tenantName.trim() ||
+      !this.formData.description.trim() ||
+      !this.formData.urgency
+    ) {
+      alert('Please fill in all fields properly.');
+      return;
+    }
+
     if (this.isEditMode && this.editIndex !== null) {
       // Update the existing request
       this.requests[this.editIndex] = { ...this.formData };
