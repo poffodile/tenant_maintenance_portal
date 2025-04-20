@@ -30,6 +30,8 @@ export class MaintenanceFormComponent implements OnInit {
   saveRequestsToLocalStorage() {
     localStorage.setItem('maintenanceRequests', JSON.stringify(this.requests));
   }
+
+  successMessage: string = '';
   submitRequest() {
     //this.requests.push({ ...this.formData }); // add to the list of requests
 
@@ -60,6 +62,15 @@ export class MaintenanceFormComponent implements OnInit {
       description: '',
       urgency: '',
     };
+
+    this.successMessage = this.isEditMode
+      ? 'Request updated successfully!'
+      : ' Request submitted successfully!';
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 3000);
 
     //console.log('Maintenance Request Submitted:', this.formData);
     // TODO: add to a list of requests
