@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MaintenanceRequest } from '../models/maintenance_request.model';
 
 @Component({
   selector: 'app-maintenance-form',
@@ -17,7 +18,7 @@ export class MaintenanceFormComponent implements OnInit {
     //searchTerm: '',
   };
 
-  requests: any[] = []; // list of requests
+  requests: MaintenanceRequest[] = []; // list of requests
 
   searchTerm: string = '';
 
@@ -62,12 +63,16 @@ export class MaintenanceFormComponent implements OnInit {
 
     if (this.isEditMode && this.editIndex !== null) {
       // Update the existing request
-      this.requests[this.editIndex] = { ...this.formData };
+      this.requests[this.editIndex] = {
+        ...this.requests[this.editIndex],
+        ...this.formData,
+      };
       this.isEditMode = false;
       this.editIndex = null;
     } else {
       // Add a new request
-      this.requests.push({ ...this.formData });
+      this.requests.push({ ...this.formData, createdAt: new Date() });
+      // this.requests.push({ ...this.formData }); // add to the list of requests
     }
     this.saveRequestsToLocalStorage(); // Save to localStorage after adding/updating
 
