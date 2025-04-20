@@ -1,6 +1,6 @@
 <h2>Submit a Maintenance Request</h2>
 
-<form (ngSubmit)="submitRequest()" #requestForm="ngForm">
+<form #form="ngForm" (ngSubmit)="submitRequest()" novalidate>
   <label>
     Tenant Name:
     <input
@@ -10,6 +10,13 @@
       required
     />
   </label>
+  <div
+    *ngIf="form.submitted && !form.controls['tenantName']?.valid"
+    class="error"
+  >
+    Tenant name is required
+  </div>
+
   <br /><br />
 
   <label>
@@ -20,21 +27,32 @@
       required
     ></textarea>
   </label>
-
+  <div
+    *ngIf="form.submitted && !form.controls['description']?.valid"
+    class="error"
+  >
+    Issue description is required
+  </div>
   <br /><br />
 
   <label>
     Urgency:
     <select name="urgency" [(ngModel)]="formData.urgency" required>
-      <option value="">--Select--</option>
+      <option value="" disabled selected>--Select--</option>
       <option value="Low">Low</option>
       <option value="Medium">Medium</option>
       <option value="High">High</option>
     </select>
   </label>
+  <div *ngIf="form.submitted && !form.controls['urgency']?.valid" class="error">
+    Please select an urgency level
+  </div>
   <br /><br />
 
-  <button type="submit" [disabled]="!requestForm.form.valid">Submit</button>
+  <button type="submit" [disabled]="!form.valid">
+    {{ isEditMode ? "Update Request" : "Submit" }}
+    <!-- disables the submit button if the form is invalid -->
+  </button>
 </form>
 
 <hr />
@@ -46,5 +64,7 @@
     {{ request.description }}
     <!-- Where i is the index capturing the position of each request in the array -->
     <button (click)="deleteRequest(i)">Delete</button>
+    <button (click)="editRequest(i)">Edit</button>
   </li>
 </ul>
+<!-- This will display the list of requests submitted by the user. Each request will have a delete and edit button. -->
