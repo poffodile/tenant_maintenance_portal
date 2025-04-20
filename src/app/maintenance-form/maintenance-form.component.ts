@@ -66,8 +66,11 @@ export class MaintenanceFormComponent implements OnInit {
   }
 
   deleteRequest(index: number) {
-    this.requests.splice(index, 1); // removes the request at the given index
-    this.saveRequestsToLocalStorage(); // Save to localStorage after deletion
+    const confirmed = confirm('Are you sure you want to delete this request?');
+    if (confirmed) {
+      this.requests.splice(index, 1); // removes the request at the given index
+      this.saveRequestsToLocalStorage(); // Save to localStorage after deletion
+    }
   }
 
   // Track if we're editing an existing request
