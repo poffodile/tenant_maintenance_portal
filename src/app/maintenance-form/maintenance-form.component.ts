@@ -14,9 +14,23 @@ export class MaintenanceFormComponent implements OnInit {
     tenantName: '',
     description: '',
     urgency: '',
+    //searchTerm: '',
   };
 
   requests: any[] = []; // list of requests
+
+  searchTerm: string = '';
+
+  filteredRequests() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) return this.requests;
+
+    return this.requests.filter(
+      (req) =>
+        req.tenantName.toLowerCase().includes(term) ||
+        req.urgency.toLowerCase().includes(term)
+    );
+  }
 
   // Loads the saved requests from localStorage when component loads
   ngOnInit(): void {
@@ -61,6 +75,7 @@ export class MaintenanceFormComponent implements OnInit {
       tenantName: '',
       description: '',
       urgency: '',
+      // searchTerm: '',
     };
 
     this.successMessage = this.isEditMode

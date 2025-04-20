@@ -61,8 +61,15 @@
 
 <hr />
 <h3>Submitted Requests</h3>
+<input
+  type="text"
+  [(ngModel)]="searchTerm"
+  placeholder="Search by tenant or urgency..."
+  class="search-input"
+/>
+
 <ul>
-  <li *ngFor="let request of requests; let i = index">
+  <li *ngFor="let request of filteredRequests(); let i = index">
     <!-- for every request in requests array, render this block of HTML -->
     <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
     {{ request.description }}

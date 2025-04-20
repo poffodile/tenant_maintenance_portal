@@ -22,3 +22,11 @@ button:hover {
   font-size: 0.9em;
   margin-top: 4px;
 }
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
