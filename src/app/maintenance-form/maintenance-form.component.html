@@ -1,5 +1,9 @@
 <h2>Submit a Maintenance Request</h2>
 
+<div *ngIf="successMessage" class="success">
+  {{ successMessage }}
+</div>
+
 <form #form="ngForm" (ngSubmit)="submitRequest()" novalidate>
   <label>
     Tenant Name:
