@@ -93,5 +93,21 @@ export class MaintenanceFormComponent implements OnInit {
     this.formData = { ...this.requests[index] }; // Load into form
     this.isEditMode = true;
     this.editIndex = index;
+
+    this.successMessage = this.isEditMode
+      ? 'Request updated successfully!'
+      : ' Request submitted successfully!';
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 3000);
+  }
+  clearAllRequests() {
+    const confirmed = confirm('Are you sure you want to delete all requests?');
+    if (confirmed) {
+      this.requests = [];
+      localStorage.removeItem('maintenanceRequests');
+    }
   }
 }

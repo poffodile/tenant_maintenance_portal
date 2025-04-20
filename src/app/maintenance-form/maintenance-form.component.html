@@ -72,3 +72,6 @@
   </li>
 </ul>
 <!-- This will display the list of requests submitted by the user. Each request will have a delete and edit button. -->
+<button (click)="clearAllRequests()" *ngIf="requests.length > 0">
+  Clear All Requests
+</button>
