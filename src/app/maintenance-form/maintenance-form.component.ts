@@ -28,7 +28,8 @@ export class MaintenanceFormComponent implements OnInit {
     return this.requests.filter(
       (req) =>
         req.tenantName.toLowerCase().includes(term) ||
-        req.urgency.toLowerCase().includes(term)
+        req.urgency.toLowerCase().includes(term) ||
+        req.description.toLowerCase().includes(term)
     );
   }
 
