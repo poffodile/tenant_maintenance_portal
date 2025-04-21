@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MaintenanceRequest } from '../models/maintenance_request.model';
+import { LocalStorageService } from '../services/local-storage.service';
+type FormData = Omit<MaintenanceRequest, 'createdAt'>;
 
 @Component({
   selector: 'app-maintenance-form',
@@ -10,18 +13,23 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, CommonModule], // Import FormsModule and CommonModule for form handling
 })
 export class MaintenanceFormComponent implements OnInit {
-  formData = {
+  //formData: Omit<MaintenanceRequest, 'createdAt'> = {
+  formData: FormData = {
     tenantName: '',
     description: '',
     urgency: '',
-    //searchTerm: '',
   };
 
-  requests: any[] = []; // list of requests
-
+  requests: MaintenanceRequest[] = []; // list of requests
   searchTerm: string = '';
+  successMessage: string = '';
+  isEditMode: boolean = false;
+  editIndex: number | null = null;
 
-  filteredRequests() {
+  constructor(private storageService: LocalStorageService) {}
+
+  filteredRequests(): MaintenanceRequest[] {
+    // Filter requests based on the search term
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) return this.requests;
 
@@ -33,24 +41,20 @@ export class MaintenanceFormComponent implements OnInit {
     );
   }
 
-  // Loads the saved requests from localStorage when component loads
   ngOnInit(): void {
-    const storedRequests = localStorage.getItem('maintenanceRequests');
-    if (storedRequests) {
-      this.requests = JSON.parse(storedRequests);
-    }
+    this.requests = this.storageService.loadRequests();
   }
+  //const storedRequests = this.storageService.getItem('maintenanceRequests');
+  // if (storedRequests) {
+  //     this.requests = JSON.parse(storedRequests);
 
-  // Save requests to localStorage
-  saveRequestsToLocalStorage() {
-    localStorage.setItem('maintenanceRequests', JSON.stringify(this.requests));
-  }
+  // }
 
-  successMessage: string = '';
-  submitRequest() {
-    //this.requests.push({ ...this.formData }); // add to the list of requests
+  // saveRequestsToLocalStorage() {
+  //   this.storageService.setItem('maintenanceRequests', JSON.stringify(this.requests));
+  // }
 
-    //prevents empty space entres in the form
+  submitRequest(): void {
     if (
       !this.formData.tenantName.trim() ||
       !this.formData.description.trim() ||
@@ -61,69 +65,61 @@ export class MaintenanceFormComponent implements OnInit {
     }
 
     if (this.isEditMode && this.editIndex !== null) {
-      // Update the existing request
-      this.requests[this.editIndex] = { ...this.formData };
+      this.requests[this.editIndex] = {
+        ...this.requests[this.editIndex],
+        ...this.formData,
+      };
       this.isEditMode = false;
       this.editIndex = null;
     } else {
-      // Add a new request
-      this.requests.push({ ...this.formData });
+      this.requests.push({ ...this.formData, createdAt: new Date() });
     }
-    this.saveRequestsToLocalStorage(); // Save to localStorage after adding/updating
+    this.storageService.saveRequests(this.requests);
 
-    // Reset form data after submission
     this.formData = {
       tenantName: '',
       description: '',
       urgency: '',
-      // searchTerm: '',
     };
 
     this.successMessage = this.isEditMode
       ? 'Request updated successfully!'
-      : ' Request submitted successfully!';
+      : 'Request submitted successfully!';
 
-    // Clear message after 3 seconds
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
-
-    //console.log('Maintenance Request Submitted:', this.formData);
-    // TODO: add to a list of requests
   }
 
   deleteRequest(index: number) {
     const confirmed = confirm('Are you sure you want to delete this request?');
     if (confirmed) {
-      this.requests.splice(index, 1); // removes the request at the given index
-      this.saveRequestsToLocalStorage(); // Save to localStorage after deletion
+      this.requests.splice(index, 1);
+      //this.saveRequestsToLocalStorage();
+      this.storageService.saveRequests(this.requests);
     }
   }
 
-  // Track if we're editing an existing request
-  isEditMode: boolean = false;
-  editIndex: number | null = null;
-
-  // loads the selected request into the form for editing
   editRequest(index: number) {
-    this.formData = { ...this.requests[index] }; // Load into form
+    this.formData = { ...this.requests[index] };
     this.isEditMode = true;
     this.editIndex = index;
 
     this.successMessage = this.isEditMode
       ? 'Request updated successfully!'
-      : ' Request submitted successfully!';
+      : 'Request submitted successfully!';
 
-    // Clear message after 3 seconds
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
   }
+
   clearAllRequests() {
     const confirmed = confirm('Are you sure you want to delete all requests?');
     if (confirmed) {
       this.requests = [];
-      localStorage.removeItem('maintenanceRequests');
+      // this.storageService.removeItem('maintenanceRequests');
+      this.storageService.clearRequests();
     }
   }
 }
