@@ -122,4 +122,16 @@ export class MaintenanceFormComponent implements OnInit {
       this.storageService.clearRequests();
     }
   }
+  exportToJSON(): void {
+    const jsonData = JSON.stringify(this.requests, null, 2); // gives  Pretty-print with indentation
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'maintenance_requests.json';
+    a.click();
+
+    window.URL.revokeObjectURL(url); // Cleans up the object URL
+  }
 }
