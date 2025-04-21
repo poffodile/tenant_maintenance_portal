@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaintenanceRequest } from '../models/maintenance_request.model';
 import { LocalStorageService } from '../services/local-storage.service';
-type FormData = Omit<MaintenanceRequest, 'createdAt'>;
+type FormData = Omit<MaintenanceRequest, 'createdAt' | 'status'>; // Exclude createdAt and status from the form data type
 
 @Component({
   selector: 'app-maintenance-form',
@@ -72,7 +72,11 @@ export class MaintenanceFormComponent implements OnInit {
       this.isEditMode = false;
       this.editIndex = null;
     } else {
-      this.requests.push({ ...this.formData, createdAt: new Date() });
+      this.requests.push({
+        ...this.formData,
+        createdAt: new Date(),
+        status: 'New',
+      });
     }
     this.storageService.saveRequests(this.requests);
 
