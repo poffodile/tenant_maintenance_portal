@@ -71,11 +71,23 @@
 <ul>
   <li *ngFor="let request of filteredRequests(); let i = index">
     <!-- for every request in requests array, render this block of HTML -->
-    <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
+    <strong>{{ request.tenantName }}</strong> ({{ request.urgency }}) -
+    <em> Status:</em> {{ request.status }} <br />
     {{ request.description }}
     <!-- Where i is the index capturing the position of each request in the array -->
     <button (click)="deleteRequest(i)">Delete</button>
     <button (click)="editRequest(i)">Edit</button>
+
+    <select
+      name="status{{ i }}"
+      [(ngModel)]="request.status"
+      (change)="updateStatus(i)"
+      title="Update status for {{ request.tenantName }}"
+    >
+      <option value="New">New</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Resolved">Resolved</option>
+    </select>
   </li>
 </ul>
 <!-- This will display the list of requests submitted by the user. Each request will have a delete and edit button. -->

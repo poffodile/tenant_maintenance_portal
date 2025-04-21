@@ -16,7 +16,7 @@ export class MaintenanceFormComponent implements OnInit {
   //formData: Omit<MaintenanceRequest, 'createdAt'> = {
   formData: FormData = {
     tenantName: '',
-    description: '',
+    description: 'Low',
     urgency: '',
   };
 
@@ -82,7 +82,7 @@ export class MaintenanceFormComponent implements OnInit {
 
     this.formData = {
       tenantName: '',
-      description: '',
+      description: 'Low',
       urgency: '',
     };
 
@@ -137,5 +137,9 @@ export class MaintenanceFormComponent implements OnInit {
     a.click();
 
     window.URL.revokeObjectURL(url); // Cleans up the object URL
+  }
+
+  updateStatus(index: number): void {
+    this.storageService.saveRequests(this.requests); // persist changes
   }
 }
