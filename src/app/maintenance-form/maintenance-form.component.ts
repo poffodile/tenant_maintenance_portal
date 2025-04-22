@@ -142,4 +142,21 @@ export class MaintenanceFormComponent implements OnInit {
   updateStatus(index: number): void {
     this.storageService.saveRequests(this.requests); // persist changes
   }
+
+  getSummary() {
+    const summary = {
+      total: this.requests.length,
+      low: 0,
+      medium: 0,
+      high: 0,
+    };
+
+    for (const req of this.requests) {
+      if (req.urgency === 'Low') summary.low++;
+      if (req.urgency === 'Medium') summary.medium++;
+      if (req.urgency === 'High') summary.high++;
+    }
+
+    return summary;
+  }
 }

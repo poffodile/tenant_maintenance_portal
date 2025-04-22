@@ -68,6 +68,26 @@
   class="search-input"
 />
 
+<hr />
+<h3>Request Summary</h3>
+<div *ngIf="requests.length > 0">
+  <p>
+    Total Requests: <strong>{{ getSummary().total }}</strong>
+  </p>
+  <p>
+    Low: <em class="urgency-low">{{ getSummary().low }}</em>
+  </p>
+  <p>
+    Medium: <em class="urgency-medium">{{ getSummary().medium }}</em>
+  </p>
+  <p>
+    High: <em class="urgency-high">{{ getSummary().high }}</em>
+  </p>
+</div>
+<div *ngIf="requests.length === 0">
+  <p><em>No requests yet.</em></p>
+</div>
+
 <ul>
   <li *ngFor="let request of filteredRequests(); let i = index">
     <!-- for every request in requests array, render this block of HTML -->
