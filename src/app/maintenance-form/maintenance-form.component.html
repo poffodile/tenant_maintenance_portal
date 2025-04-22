@@ -74,6 +74,11 @@
     <strong>{{ request.tenantName }}</strong> ({{ request.urgency }}) -
     <em> Status:</em> {{ request.status }} <br />
     {{ request.description }}
+    <br />
+    <small
+      ><em>Submitted on:</em> {{ request.createdAt | date : "medium" }}</small
+    >
+    <br />
     <!-- Where i is the index capturing the position of each request in the array -->
     <button (click)="deleteRequest(i)">Delete</button>
     <button (click)="editRequest(i)">Edit</button>

@@ -16,8 +16,8 @@ export class MaintenanceFormComponent implements OnInit {
   //formData: Omit<MaintenanceRequest, 'createdAt'> = {
   formData: FormData = {
     tenantName: '',
-    description: 'Low',
-    urgency: '',
+    description: '',
+    urgency: 'Low',
   };
 
   requests: MaintenanceRequest[] = []; // list of requests
@@ -82,8 +82,8 @@ export class MaintenanceFormComponent implements OnInit {
 
     this.formData = {
       tenantName: '',
-      description: 'Low',
-      urgency: '',
+      description: '',
+      urgency: 'Low',
     };
 
     this.successMessage = this.isEditMode
@@ -127,7 +127,7 @@ export class MaintenanceFormComponent implements OnInit {
     }
   }
   exportToJSON(): void {
-    const jsonData = JSON.stringify(this.requests, null, 2); // gives  Pretty-print with indentation
+    const jsonData = JSON.stringify(this.requests, null, 2); // Converts requests to JSON format with pretty print indentation
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
 
