@@ -11,6 +11,10 @@
     <a href="#" class="hover:text-blue-400 transition-colors">Dashboard</a>
     <a href="#" class="hover:text-blue-400 transition-colors">Requests</a>
     <a href="#" class="hover:text-blue-400 transition-colors">Summary</a>
+    <!-- dark mode  Toggle Button -->
+    <button (click)="toggleTheme()" class="text-white text-sm">
+      {{ isDarkMode ? "Light Mode" : "Dark Mode" }}
+    </button>
   </div>
 </nav>
 

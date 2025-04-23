@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* body {
   @apply bg-gray-900 text-white min-h-screen;
+} */
+html.dark {
+  background-color: #0f172a;
+}
+html.light {
+  background-color: #f8fafc;
 }
