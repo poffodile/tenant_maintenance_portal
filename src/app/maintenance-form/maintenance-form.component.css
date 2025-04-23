@@ -30,3 +30,15 @@ button:hover {
   border-radius: 4px;
   box-sizing: border-box;
 }
+.urgency-low {
+  color: green;
+}
+.urgency-medium {
+  color: orange;
+  font-weight: bold;
+}
+
+.urgency-high {
+  color: red;
+  font-weight: bold;
+}

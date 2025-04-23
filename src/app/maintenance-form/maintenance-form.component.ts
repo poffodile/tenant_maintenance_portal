@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaintenanceRequest } from '../models/maintenance_request.model';
 import { LocalStorageService } from '../services/local-storage.service';
-type FormData = Omit<MaintenanceRequest, 'createdAt'>;
+type FormData = Omit<MaintenanceRequest, 'createdAt' | 'status'>; // Exclude createdAt and status from the form data type
 
 @Component({
   selector: 'app-maintenance-form',
@@ -13,20 +13,38 @@ type FormData = Omit<MaintenanceRequest, 'createdAt'>;
   imports: [FormsModule, CommonModule], // Import FormsModule and CommonModule for form handling
 })
 export class MaintenanceFormComponent implements OnInit {
-  //formData: Omit<MaintenanceRequest, 'createdAt'> = {
+  /**
+   * Captures the input from the form fields
+   * the 'createdAt' and 'status' fields would be added when submitting the form.
+   */
   formData: FormData = {
     tenantName: '',
     description: '',
-    urgency: '',
+    urgency: 'Low',
   };
 
-  requests: MaintenanceRequest[] = []; // list of requests
+  /**
+   * @requests the full list of submitted  maintenance requests.
+   * @searchTerm  string to filter the requests based on tenant name, urgency, or description.
+   * @successMessage string to display a success message after submitting or updating a request.
+   * @formData object to hold the form data for a new or edited request.
+   * @isEditMode boolean to check if the form is in edit mode.
+   * @editIndex index of the request being edited.
+   * @filteredRequests method to filter the requests based on the search term.
+   *
+   */
+  requests: MaintenanceRequest[] = []; // list of request
   searchTerm: string = '';
   successMessage: string = '';
   isEditMode: boolean = false;
   editIndex: number | null = null;
 
   constructor(private storageService: LocalStorageService) {}
+
+  /**
+   * @filteredRequests method to filter the requests based on the search term.
+   * @returns filtered array of requests based on the search term.
+   */
 
   filteredRequests(): MaintenanceRequest[] {
     // Filter requests based on the search term
@@ -41,19 +59,19 @@ export class MaintenanceFormComponent implements OnInit {
     );
   }
 
+  /**
+   * @ngOnInit loads the requests from local storage when the component initializes.
+   * It retrieves the requests from local storage and assigns them to the requests property.
+   */
   ngOnInit(): void {
     this.requests = this.storageService.loadRequests();
   }
-  //const storedRequests = this.storageService.getItem('maintenanceRequests');
-  // if (storedRequests) {
-  //     this.requests = JSON.parse(storedRequests);
 
-  // }
-
-  // saveRequestsToLocalStorage() {
-  //   this.storageService.setItem('maintenanceRequests', JSON.stringify(this.requests));
-  // }
-
+  /**
+   * @submitRequest method to submit the form data.
+   * It checks if the form is in edit mode or not and updates the request accordingly.
+   * It also validates the form data before submission.
+   */
   submitRequest(): void {
     if (
       !this.formData.tenantName.trim() ||
@@ -66,20 +84,27 @@ export class MaintenanceFormComponent implements OnInit {
 
     if (this.isEditMode && this.editIndex !== null) {
       this.requests[this.editIndex] = {
+        // if editing, update the existing  request
         ...this.requests[this.editIndex],
         ...this.formData,
       };
       this.isEditMode = false;
       this.editIndex = null;
     } else {
-      this.requests.push({ ...this.formData, createdAt: new Date() });
+      this.requests.push({
+        // if not editing, add a new request
+        ...this.formData,
+        createdAt: new Date(),
+        status: 'New',
+      });
     }
     this.storageService.saveRequests(this.requests);
 
     this.formData = {
+      // reset the form data after submission
       tenantName: '',
       description: '',
-      urgency: '',
+      urgency: 'Low',
     };
 
     this.successMessage = this.isEditMode
@@ -90,7 +115,12 @@ export class MaintenanceFormComponent implements OnInit {
       this.successMessage = '';
     }, 3000);
   }
-
+  /**
+   * * @deleteRequest method to delete a request from the list. (a specific index)
+   * It uses the splice method to remove the request from the array.
+   * It prompts the user for confirmation before deleting the request.
+   * @param index the index of the request to be deleted.
+   */
   deleteRequest(index: number) {
     const confirmed = confirm('Are you sure you want to delete this request?');
     if (confirmed) {
@@ -99,7 +129,11 @@ export class MaintenanceFormComponent implements OnInit {
       this.storageService.saveRequests(this.requests);
     }
   }
-
+  /**
+   * * @editRequest method to edit a request from the list. (a specific index)
+   * It sets the form data to the selected request and switches to edit mode.
+   * @param index the index of the request to be edited.
+   */
   editRequest(index: number) {
     this.formData = { ...this.requests[index] };
     this.isEditMode = true;
@@ -122,8 +156,13 @@ export class MaintenanceFormComponent implements OnInit {
       this.storageService.clearRequests();
     }
   }
+
+  /**
+   * * @exportToJSON method to export the requests to a JSON file.
+   * It converts the requests array to a JSON string and creates a Blob object from it.
+   */
   exportToJSON(): void {
-    const jsonData = JSON.stringify(this.requests, null, 2); // gives  Pretty-print with indentation
+    const jsonData = JSON.stringify(this.requests, null, 2); // Converts requests to JSON format with pretty print indentation
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
 
@@ -133,5 +172,38 @@ export class MaintenanceFormComponent implements OnInit {
     a.click();
 
     window.URL.revokeObjectURL(url); // Cleans up the object URL
+  }
+
+  /**
+   * * @updateStatus method to update the status of a request.
+   * It sets the status of the request to "In Progress" or "Completed" based on the current status.
+   * @param index the index of the request to be updated.
+   * It also persists the changes to local storage.
+   */
+  updateStatus(index: number): void {
+    this.storageService.saveRequests(this.requests); // persist changes
+  }
+
+  /**
+   * * @getSummary method to get a summary of the requests.
+   * It counts the number of requests based on their urgency level (Low, Medium, High).
+   * It returns an object containing the total number of requests and the count of each urgency level.
+   * @returns an object containing the total number of requests and the count of each urgency level.
+   */
+  getSummary() {
+    const summary = {
+      total: this.requests.length,
+      low: 0,
+      medium: 0,
+      high: 0,
+    };
+
+    for (const req of this.requests) {
+      if (req.urgency === 'Low') summary.low++;
+      if (req.urgency === 'Medium') summary.medium++;
+      if (req.urgency === 'High') summary.high++;
+    }
+
+    return summary;
   }
 }

@@ -1,85 +1,232 @@
-<h2>Submit a Maintenance Request</h2>
+<!-- NAVBAR -->
+<nav
+  class="bg-[#1E293B] px-4 py-3 shadow-md flex items-center justify-between sticky top-0 z-50"
+>
+  <nav
+    class="bg-[#1E293B] px-4 py-3 shadow-md flex items-center justify-between"
+  >
+    <div class="flex items-center space-x-3">
+      <img src="assets/logo.png" alt="Logo" class="h-8 w-8" />
+      <span class="text-white text-xl font-semibold">Maintenance Portal</span>
+    </div>
 
-<div *ngIf="successMessage" class="success">
-  {{ successMessage }}
+    <div class="hidden md:flex space-x-6 text-white text-sm font-medium">
+      <a href="#" class="hover:text-blue-400 transition-colors">Dashboard</a>
+      <a href="#" class="hover:text-blue-400 transition-colors">Requests</a>
+      <a href="#" class="hover:text-blue-400 transition-colors">Summary</a>
+    </div>
+
+    <!-- <button
+    class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm"
+  > Sign In
+  </button> -->
+  </nav>
+</nav>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+  <!-- FORM SECTION -->
+  <h2 class="text-2xl font-semibold text-white mb-4">
+    Submit a Maintenance Request
+  </h2>
+  <form
+    #form="ngForm"
+    (ngSubmit)="submitRequest()"
+    novalidate
+    class="bg-[#1E293B] p-6 rounded-lg shadow-md space-y-4 text-white"
+  >
+    <!-- Tenant Name -->
+    <div>
+      <label class="block mb-1">Tenant Name:</label>
+      <input
+        type="text"
+        name="tenantName"
+        [(ngModel)]="formData.tenantName"
+        required
+        title="Enter the tenant's name"
+        placeholder="Enter tenant name"
+        class="w-full bg-[#334155] text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <div
+        *ngIf="form.submitted && !form.controls['tenantName']?.valid"
+        class="text-red-400 text-sm mt-1"
+      >
+        Tenant name is required
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block mb-1">Issue Description:</label>
+      <textarea
+        name="description"
+        [(ngModel)]="formData.description"
+        required
+        title="Provide a description of the issue"
+        placeholder="Describe the issue here..."
+        class="w-full bg-[#334155] text-white rounded-md px-3 py-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+      <div
+        *ngIf="form.submitted && !form.controls['description']?.valid"
+        class="text-red-400 text-sm mt-1"
+      >
+        Issue description is required
+      </div>
+    </div>
+
+    <!-- Urgency -->
+    <div>
+      <label class="block mb-1">Urgency:</label>
+      <select
+        name="urgency"
+        [(ngModel)]="formData.urgency"
+        required
+        class="w-full bg-[#334155] text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        title="Select the urgency level"
+      >
+        <option value="" disabled selected>--Select--</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+      <div
+        *ngIf="form.submitted && !form.controls['urgency']?.valid"
+        class="text-red-400 text-sm mt-1"
+      >
+        Please select an urgency level
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      [disabled]="!form.valid"
+      class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white font-semibold"
+    >
+      {{ isEditMode ? "Update Request" : "Submit" }}
+    </button>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="text-green-400 mt-2">
+      {{ successMessage }}
+    </div>
+  </form>
 </div>
 
-<form #form="ngForm" (ngSubmit)="submitRequest()" novalidate>
-  <label>
-    Tenant Name:
-    <input
-      type="text"
-      name="tenantName"
-      [(ngModel)]="formData.tenantName"
-      required
-    />
-  </label>
+<!-- Main Content -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+  <h3 class="text-2xl font-semibold text-white mt-10 mb-4">Request Summary</h3>
+
   <div
-    *ngIf="form.submitted && !form.controls['tenantName']?.valid"
-    class="error"
+    *ngIf="requests.length > 0"
+    class="bg-[#1E293B] text-white rounded-lg p-4 space-y-2 border border-[#334155]"
   >
-    Tenant name is required
+    <p>
+      Total Requests: <span class="font-bold">{{ getSummary().total }}</span>
+    </p>
+    <p>
+      Low: <span class="text-green-400">{{ getSummary().low }}</span>
+    </p>
+    <p>
+      Medium: <span class="text-yellow-400">{{ getSummary().medium }}</span>
+    </p>
+    <p>
+      High: <span class="text-red-400">{{ getSummary().high }}</span>
+    </p>
   </div>
 
-  <br /><br />
+  <div *ngIf="requests.length === 0" class="text-gray-400 italic mt-2">
+    No requests yet.
+  </div>
 
-  <label>
-    Issue Description:
-    <textarea
-      name="description"
-      [(ngModel)]="formData.description"
-      required
-    ></textarea>
-  </label>
   <div
-    *ngIf="form.submitted && !form.controls['description']?.valid"
-    class="error"
+    class="flex flex-col md:flex-row md:items-center md:justify-between mt-8 mb-4"
   >
-    Issue description is required
+    <h3 class="text-2xl font-semibold text-white">Submitted Requests</h3>
+
+    <div class="mt-2 md:mt-0 flex gap-2">
+      <button
+        (click)="exportToJSON()"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md transition"
+      >
+        Export to JSON
+      </button>
+
+      <button
+        (click)="clearAllRequests()"
+        *ngIf="requests.length > 0"
+        class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md transition"
+      >
+        Clear All
+      </button>
+    </div>
   </div>
-  <br /><br />
 
-  <label>
-    Urgency:
-    <select name="urgency" [(ngModel)]="formData.urgency" required>
-      <option value="" disabled selected>--Select--</option>
-      <option value="Low">Low</option>
-      <option value="Medium">Medium</option>
-      <option value="High">High</option>
-    </select>
-  </label>
-  <div *ngIf="form.submitted && !form.controls['urgency']?.valid" class="error">
-    Please select an urgency level
+  <!-- Search Bar -->
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    class="w-full mb-4 p-2 rounded bg-[#334155] text-white border border-gray-600"
+    placeholder="Search by tenant , or urgency"
+  />
+
+  <div *ngIf="requests.length > 0" class="space-y-4">
+    <div
+      *ngFor="let request of filteredRequests(); let i = index"
+      class="bg-[#1E293B] border border-[#334155] text-white rounded-xl p-4 shadow-md"
+    >
+      <div
+        class="flex flex-col md:flex-row md:justify-between md:items-start gap-4"
+      >
+        <div>
+          <h4 class="text-lg font-bold">
+            {{ request.tenantName }}
+            <span class="ml-2 text-sm text-gray-300">
+              ({{ request.urgency }})
+            </span>
+          </h4>
+
+          <p class="mt-1 text-gray-200">{{ request.description }}</p>
+
+          <p class="text-xs text-gray-400 mt-2">
+            <em>Submitted on:</em> {{ request.createdAt | date : "medium" }}
+          </p>
+
+          <p class="text-sm text-gray-300 mt-1">
+            <em>Status:</em> {{ request.status }}
+          </p>
+        </div>
+
+        <div class="flex flex-col items-start md:items-end gap-2 mt-2 md:mt-0">
+          <button
+            class="text-red-400 hover:text-red-300 transition"
+            (click)="deleteRequest(i)"
+          >
+            🗑 Delete
+          </button>
+          <button
+            class="text-blue-400 hover:text-blue-300 transition"
+            (click)="editRequest(i)"
+          >
+            Edit
+          </button>
+
+          <select
+            [(ngModel)]="request.status"
+            (change)="updateStatus(i)"
+            class="bg-[#334155] text-white border border-gray-600 rounded-md text-sm px-2 py-1 focus:ring-blue-500 focus:border-blue-500"
+            title="Update the status of the request"
+          >
+            <option value="New">New</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
-  <br /><br />
 
-  <button type="submit" [disabled]="!form.valid">
-    {{ isEditMode ? "Update Request" : "Submit" }}
-    <!-- disables the submit button if the form is invalid -->
-  </button>
-</form>
-
-<hr />
-<h3>Submitted Requests</h3>
-<input
-  type="text"
-  [(ngModel)]="searchTerm"
-  placeholder="Search by tenant or urgency..."
-  class="search-input"
-/>
-
-<ul>
-  <li *ngFor="let request of filteredRequests(); let i = index">
-    <!-- for every request in requests array, render this block of HTML -->
-    <strong>{{ request.tenantName }}</strong> ({{ request.urgency }})<br />
-    {{ request.description }}
-    <!-- Where i is the index capturing the position of each request in the array -->
-    <button (click)="deleteRequest(i)">Delete</button>
-    <button (click)="editRequest(i)">Edit</button>
-  </li>
-</ul>
-<!-- This will display the list of requests submitted by the user. Each request will have a delete and edit button. -->
-<button (click)="clearAllRequests()" *ngIf="requests.length > 0">
-  Clear All Requests
-</button>
-<button (click)="exportToJSON()">Export Requests to JSON</button>
+  <!-- No requests yet -->
+  <div *ngIf="requests.length === 0" class="text-gray-400 italic">
+    No requests yet.
+  </div>
+</div>
