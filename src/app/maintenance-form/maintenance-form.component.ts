@@ -59,7 +59,9 @@ export class MaintenanceFormComponent implements OnInit {
     );
   }
 
-  isDarkMode: boolean = true;
+  // isDarkMode: boolean = true;
+
+  theme = 'dark';
 
   /**
    * @ngOnInit loads the requests from local storage when the component initializes.
@@ -68,24 +70,35 @@ export class MaintenanceFormComponent implements OnInit {
   ngOnInit(): void {
     this.requests = this.storageService.loadRequests();
 
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    this.isDarkMode = savedTheme === 'dark' || savedTheme === null; // default to dark
-    this.applyTheme();
+    this.theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.classList.add(this.theme);
+
+    //   // Load theme preference
+    //   const savedTheme = localStorage.getItem('theme');
+    //   this.isDarkMode = savedTheme === 'dark' || savedTheme === null; // default to dark
+    //   this.applyTheme();
+    // }
+    // toggleTheme(): void {
+    //   this.isDarkMode = !this.isDarkMode;
+    //   const theme = this.isDarkMode ? 'dark' : 'light';
+    //   localStorage.setItem('theme', theme);
+    //   this.applyTheme();
+    // }
+    // applyTheme(): void {
+    //   const root = document.documentElement;
+    //   if (this.isDarkMode) {
+    //     root.classList.add('dark');
+    //   } else {
+    //     root.classList.remove('dark');
+    //   }
   }
-  toggleTheme(): void {
-    this.isDarkMode = !this.isDarkMode;
-    const theme = this.isDarkMode ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
-    this.applyTheme();
-  }
-  applyTheme(): void {
-    const root = document.documentElement;
-    if (this.isDarkMode) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+
+  toggleTheme() {
+    const newTheme = this.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.remove(this.theme);
+    document.documentElement.classList.add(newTheme);
+    this.theme = newTheme;
+    localStorage.setItem('theme', newTheme);
   }
 
   /**
