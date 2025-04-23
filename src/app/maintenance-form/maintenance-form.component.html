@@ -2,26 +2,22 @@
 <nav
   class="bg-[#1E293B] px-4 py-3 shadow-md flex items-center justify-between sticky top-0 z-50"
 >
-  <nav
-    class="bg-[#1E293B] px-4 py-3 shadow-md flex items-center justify-between"
-  >
-    <div class="flex items-center space-x-3">
-      <img src="assets/logo.png" alt="Logo" class="h-8 w-8" />
-      <span class="text-white text-xl font-semibold">Maintenance Portal</span>
-    </div>
+  <div class="flex items-center space-x-3">
+    <img src="assets/logo.png" alt="Logo" class="h-8 w-8" />
+    <span class="text-white text-xl font-semibold">Maintenance Portal</span>
+  </div>
 
-    <div class="hidden md:flex space-x-6 text-white text-sm font-medium">
-      <a href="#" class="hover:text-blue-400 transition-colors">Dashboard</a>
-      <a href="#" class="hover:text-blue-400 transition-colors">Requests</a>
-      <a href="#" class="hover:text-blue-400 transition-colors">Summary</a>
-    </div>
+  <div class="flex space-x-6 text-white text-sm font-medium ml-8">
+    <a href="#" class="hover:text-blue-400 transition-colors">Dashboard</a>
+    <a href="#" class="hover:text-blue-400 transition-colors">Requests</a>
+    <a href="#" class="hover:text-blue-400 transition-colors">Summary</a>
+  </div>
+</nav>
 
-    <!-- <button
+<!-- <button
     class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm"
   > Sign In
   </button> -->
-  </nav>
-</nav>
 
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
   <!-- FORM SECTION -->
@@ -30,7 +26,7 @@
   </h2>
   <form
     #form="ngForm"
-    (ngSubmit)="submitRequest()"
+    (ngSubmit)="submitRequest(form)"
     novalidate
     class="bg-[#1E293B] p-6 rounded-lg shadow-md space-y-4 text-white"
   >
@@ -47,8 +43,10 @@
         class="w-full bg-[#334155] text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <div
-        *ngIf="form.submitted && !form.controls['tenantName']?.valid"
-        class="text-red-400 text-sm mt-1"
+        *ngIf="
+          form.controls['tenantName']?.invalid &&
+          form.controls['tenantName']?.touched
+        "
       >
         Tenant name is required
       </div>
