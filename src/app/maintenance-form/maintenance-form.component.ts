@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaintenanceRequest } from '../models/maintenance_request.model';
 import { LocalStorageService } from '../services/local-storage.service';
@@ -59,12 +59,46 @@ export class MaintenanceFormComponent implements OnInit {
     );
   }
 
+  // isDarkMode: boolean = true;
+
+  theme = 'dark';
+
   /**
    * @ngOnInit loads the requests from local storage when the component initializes.
    * It retrieves the requests from local storage and assigns them to the requests property.
    */
   ngOnInit(): void {
     this.requests = this.storageService.loadRequests();
+
+    this.theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.classList.add(this.theme);
+
+    //   // Load theme preference
+    //   const savedTheme = localStorage.getItem('theme');
+    //   this.isDarkMode = savedTheme === 'dark' || savedTheme === null; // default to dark
+    //   this.applyTheme();
+    // }
+    // toggleTheme(): void {
+    //   this.isDarkMode = !this.isDarkMode;
+    //   const theme = this.isDarkMode ? 'dark' : 'light';
+    //   localStorage.setItem('theme', theme);
+    //   this.applyTheme();
+    // }
+    // applyTheme(): void {
+    //   const root = document.documentElement;
+    //   if (this.isDarkMode) {
+    //     root.classList.add('dark');
+    //   } else {
+    //     root.classList.remove('dark');
+    //   }
+  }
+
+  toggleTheme() {
+    const newTheme = this.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.remove(this.theme);
+    document.documentElement.classList.add(newTheme);
+    this.theme = newTheme;
+    localStorage.setItem('theme', newTheme);
   }
 
   /**
@@ -72,13 +106,11 @@ export class MaintenanceFormComponent implements OnInit {
    * It checks if the form is in edit mode or not and updates the request accordingly.
    * It also validates the form data before submission.
    */
-  submitRequest(): void {
-    if (
-      !this.formData.tenantName.trim() ||
-      !this.formData.description.trim() ||
-      !this.formData.urgency
-    ) {
-      alert('Please fill in all fields properly.');
+  submitRequest(form: NgForm): void {
+    // only proceeds if all the required fields are filled
+    if (form.invalid) {
+      // Mark the form as submitted so that HTML error messages show
+      form.form.markAllAsTouched();
       return;
     }
 
@@ -106,10 +138,14 @@ export class MaintenanceFormComponent implements OnInit {
       description: '',
       urgency: 'Low',
     };
+    form.resetForm(); // reset the form fields
 
     this.successMessage = this.isEditMode
       ? 'Request updated successfully!'
       : 'Request submitted successfully!';
+
+    // Scroll to top so they can see the message
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     setTimeout(() => {
       this.successMessage = '';
