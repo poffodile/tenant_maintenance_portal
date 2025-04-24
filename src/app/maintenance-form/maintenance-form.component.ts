@@ -3,6 +3,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaintenanceRequest } from '../models/maintenance_request.model';
 import { LocalStorageService } from '../services/local-storage.service';
+import { SensorService } from '../services/sensor.service';
+
 type FormData = Omit<MaintenanceRequest, 'createdAt' | 'status'>; // Exclude createdAt and status from the form data type
 
 @Component({
@@ -39,7 +41,10 @@ export class MaintenanceFormComponent implements OnInit {
   isEditMode: boolean = false;
   editIndex: number | null = null;
 
-  constructor(private storageService: LocalStorageService) {}
+  constructor(
+    private sensorService: SensorService,
+    private storageService: LocalStorageService
+  ) {}
 
   /**
    * @filteredRequests method to filter the requests based on the search term.
@@ -66,6 +71,11 @@ export class MaintenanceFormComponent implements OnInit {
   /**
    * @ngOnInit loads the requests from local storage when the component initializes.
    * It retrieves the requests from local storage and assigns them to the requests property.
+   *
+   * it loads the maintenance requests from local storage and sets the theme based on the user's preference.
+   * makes use of real time sensor data (temperature and humidity) to auto-log requests if certain conditions are met.
+   * if the temperature is above 30°C or humidity is above 70%, it automatically logs a request.
+   * The requests are then saved to local storage.
    */
   ngOnInit(): void {
     this.requests = this.storageService.loadRequests();
@@ -73,24 +83,28 @@ export class MaintenanceFormComponent implements OnInit {
     this.theme = localStorage.getItem('theme') || 'dark';
     document.documentElement.classList.add(this.theme);
 
+    this.sensorService.getSensorData().subscribe((data) => {
+      console.log('Live Sensor Data:', data);
+
+      // Example auto-log condition: temp above 30C or humidity above 70%
+      const [temp, humid] = data.match(/\d+(\.\d+)?/g) || [];
+
+      const tempValue = parseFloat(temp || '0');
+      const humidValue = parseFloat(humid);
+
+      if ((tempValue > 30 || humidValue > 70) && !this.isEditMode) {
+        this.requests.push({
+          tenantName: 'Auto Sensor Alert',
+          description: `Temperature: ${tempValue}°C, Humidity: ${humidValue}%`,
+          urgency: 'High',
+          status: 'New',
+          createdAt: new Date(),
+        });
+
+        this.storageService.saveRequests(this.requests);
+      }
+    });
     //   // Load theme preference
-    //   const savedTheme = localStorage.getItem('theme');
-    //   this.isDarkMode = savedTheme === 'dark' || savedTheme === null; // default to dark
-    //   this.applyTheme();
-    // }
-    // toggleTheme(): void {
-    //   this.isDarkMode = !this.isDarkMode;
-    //   const theme = this.isDarkMode ? 'dark' : 'light';
-    //   localStorage.setItem('theme', theme);
-    //   this.applyTheme();
-    // }
-    // applyTheme(): void {
-    //   const root = document.documentElement;
-    //   if (this.isDarkMode) {
-    //     root.classList.add('dark');
-    //   } else {
-    //     root.classList.remove('dark');
-    //   }
   }
 
   toggleTheme() {
